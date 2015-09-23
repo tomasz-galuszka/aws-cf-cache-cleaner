@@ -4,13 +4,14 @@ import time
 import os
 from xml.etree import ElementTree
 from xml.etree.ElementTree import SubElement
+import sys
 
 import requests
 
 from auth.authorization import Authorization
 
-AWS_ACCESS_KEY = os.environ['AWS_ACCESS_KEY']
-AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
+AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_SERVICE_ID = 'E28W3Y5IKJSYFV'
 AWS_REGION = 'us-east-1'
 AWS_SERVICE = 'cloudfront'
@@ -63,6 +64,12 @@ def prepare_request_body(items):
     os.remove(caller_reference_element.text)
 
     return xml_content
+
+
+def check_aws_keys():
+    if AWS_ACCESS_KEY is None or AWS_SECRET_ACCESS_KEY is None:
+        print 'No aws access key is available.'
+        sys.exit()
 
 
 def generate_request_headers(authorization_header_value):
@@ -150,11 +157,11 @@ def main():
     """
     -a [invalidation_info<invalidation_id> | invalidation_info_list | invalidate<items_file_path> ]
     """
-
     p = optparse.OptionParser()
     p.add_option('--action', '-a', default="invalidation_info_list")
     options, arguments = p.parse_args()
 
+    check_aws_keys()
     if options.action == 'invalidation_info':
         if len(arguments) == 1:
             return get_invalidation(arguments[0])
