@@ -147,6 +147,10 @@ def get_invalidation(invalidation_id):
 
 
 def main():
+    """
+    -a [invalidation_info<invalidation_id> | invalidation_info_list | invalidate<items_file_path> ]
+    """
+
     p = optparse.OptionParser()
     p.add_option('--action', '-a', default="invalidation_info_list")
     options, arguments = p.parse_args()
