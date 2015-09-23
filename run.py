@@ -9,8 +9,8 @@ import requests
 
 from auth.authorization import Authorization
 
-AWS_ACCESS_KEY = '123123'
-AWS_SECRET_ACCESS_KEY = '123123'
+AWS_ACCESS_KEY = os.environ['AWS_ACCESS_KEY']
+AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 AWS_SERVICE_ID = 'E28W3Y5IKJSYFV'
 AWS_REGION = 'us-east-1'
 AWS_SERVICE = 'cloudfront'
@@ -21,7 +21,7 @@ PATH = '/2015-04-17/distribution/%s/invalidation/' % AWS_SERVICE_ID
 CONTENT_TYPE = 'text/xml'
 CHARSET = 'utf-8'
 ALGORITHM = 'AWS4-HMAC-SHA256'
-REQUEST_BODY = 'request_invalidate_body.xml'
+REQUEST_BODY = 'templates/request_invalidate_body.xml'
 
 t = datetime.datetime.utcnow()
 _DATE = t.strftime('%Y%m%dT%H%M%SZ')
@@ -36,8 +36,6 @@ def log_headers(headers):
     print ''
 
 
-# items - list contains items to invalidate
-# example ['/image1.jpg', '/img/image.png']
 def prepare_request_body(items):
     ElementTree.register_namespace('', 'http://cloudfront.amazonaws.com/doc/2015-04-17/')
 

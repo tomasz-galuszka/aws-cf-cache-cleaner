@@ -2,16 +2,16 @@ import hashlib
 import hmac
 
 
-def create_signed_headers():
-    return 'content-type;host;x-amz-date'
-
-
-def create_hashed_payload(request_body):
-    return hashlib.sha256(request_body).hexdigest()
-
-
 def sign(key, msg):
     return hmac.new(key, msg.encode("utf-8"), hashlib.sha256).digest()
+
+
+def hash_gen(v):
+    return hashlib.sha256(v).hexdigest()
+
+
+def create_signed_headers():
+    return 'content-type;host;x-amz-date'
 
 
 class Authorization(object):
@@ -35,7 +35,7 @@ class Authorization(object):
 
         signed_headers = create_signed_headers()
 
-        hashed_payload = create_hashed_payload(request_body)  # empty for get requests
+        hashed_payload = hash_gen(request_body)  # empty for get requests
 
         return canonical_http_method + '\n' \
                + canonical_uri + '\n' \
@@ -44,19 +44,14 @@ class Authorization(object):
                + signed_headers + '\n' \
                + hashed_payload
 
-    @staticmethod
-    def create_hashed_canonical_request_form(canonical_request_form):
-        return hashlib.sha256(canonical_request_form).hexdigest()
-
     # ************* Task 2: Create a String to Sign for Signature Version 4 ***************************************
     def generate_credential_scope(self):
-        credential_scope = self.date_stamp + '/' + self.region + '/' + self.service + '/' + 'aws4_request'
-        return credential_scope
+        return self.date_stamp + '/' + self.region + '/' + self.service + '/' + 'aws4_request'
 
     def create_string_to_sign4(self, request_body, method, path, content_type, charset, host, query_string):
         canonical_request_form = self.create_canonical_request_form(request_body, method, path, content_type, charset,
                                                                     host, query_string)
-        canonical_request_hashed = self.create_hashed_canonical_request_form(canonical_request_form)
+        canonical_request_hashed = hash_gen(canonical_request_form)
         credential_scope = self.generate_credential_scope()
 
         return self.algorithm + '\n' + self._date + '\n' + credential_scope + '\n' + canonical_request_hashed
@@ -84,4 +79,4 @@ class Authorization(object):
         signed_headers = create_signed_headers()
         signature = self.calculate_aws_signature4(aws_secret_access_key, request_body, method, path, content_type,
                                                   charset, host, query_string)
-        return self.algorithm + ' Credential=' + aws_access_key + '/' + credential_scope + ',' + ' SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
+        return self.algorithm + ' Credential=' + aws_access_key + '/' + credential_scope + ', ' + ' SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
