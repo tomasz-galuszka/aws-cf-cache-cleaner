@@ -100,8 +100,14 @@ def invalidate_cache(items):
 
     try:
         response = requests.post(url=endpoint, data=request_body, headers=headers)
-        print response
-        print response.text
+        if response.status_code == requests.codes.ok:
+            xml_doc = ElementTree.parse(response.text)
+            root_element = xml_doc.getroot()
+
+            print response.text
+        else:
+            print response.text
+
         return response
     except Exception as e:
         print e.message
@@ -125,8 +131,20 @@ def get_invalidation_list():
 
     try:
         response = requests.get(url=endpoint, headers=headers)
-        print response
-        print response.text
+        if response.status_code == requests.codes.ok:
+            xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
+            root_element = xml_doc.getroot()
+            quantity_element = root_element[3]
+            print 'Quantity: ' + quantity_element.text
+
+            items_element = root_element[4]
+            for child in items_element:
+                print 'Id: ' + str(child[0].text)
+                print 'CreateTime: ' + str(child[1].text)
+                print 'Status: ' + str(child[2].text)
+                print '----------------------------------------'
+        else:
+            print response.text
         return response
     except Exception as e:
         print e.message
@@ -150,8 +168,16 @@ def get_invalidation(invalidation_id):
 
     try:
         response = requests.get(url=endpoint, headers=headers)
-        print response
-        print response.text
+        if response.status_code == requests.codes.ok:
+            xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
+            root_element = xml_doc.getroot()
+
+            print 'Id: ' + root_element[0].text
+            print 'Status: ' + root_element[1].text
+            print 'CreateTime: ' + root_element[2].text
+
+        else:
+            print response.text
         return response
     except Exception as e:
         print e.message
@@ -169,12 +195,12 @@ def main():
     check_aws_keys()
     if options.action == 'invalidation_info':
         if len(arguments) == 1:
-            print get_invalidation(arguments[0])
+            get_invalidation(arguments[0])
         else:
             print 'Action requires invalidation_id as argument'
 
     elif options.action == 'invalidation_info_list':
-        print get_invalidation_list()
+        get_invalidation_list()
 
     elif options.action == 'invalidate':
         if len(arguments) == 1:
@@ -187,7 +213,7 @@ def main():
                         continue
                     input_files.append(line.strip())
 
-            print invalidate_cache(input_files)
+            invalidate_cache(input_files)
         else:
             print 'Action requires changed file path as argument'
     else:

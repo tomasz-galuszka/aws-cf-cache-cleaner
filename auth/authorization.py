@@ -52,9 +52,9 @@ class Authorization(object):
         canonical_request_form = self.create_canonical_request_form(request_body, method, path, content_type, charset,
                                                                     host, query_string)
 
-        print ''
-        print canonical_request_form
-        print ''
+        # print ''
+        # print canonical_request_form
+        # print ''
 
         canonical_request_hashed = hash_gen(canonical_request_form)
         credential_scope = self.generate_credential_scope()
