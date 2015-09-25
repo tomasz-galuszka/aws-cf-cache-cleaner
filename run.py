@@ -135,7 +135,7 @@ def get_invalidation_list():
             xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
             root_element = xml_doc.getroot()
             quantity_element = root_element[3]
-            print 'Quantity: ' + quantity_element.text
+            print 'Quantity: ' + quantity_element.text + '\n'
 
             items_element = root_element[4]
             for child in items_element:
