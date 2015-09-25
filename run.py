@@ -10,14 +10,13 @@ import requests
 
 from auth.authorization import Authorization
 
-AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY = 'AKIAICDQQHI5LLJT4L4A'
+AWS_SECRET_ACCESS_KEY = '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'
 AWS_SERVICE_ID = 'E28W3Y5IKJSYFV'
 AWS_REGION = 'us-east-1'
 AWS_SERVICE = 'cloudfront'
 AWS_HOST = 'cloudfront.amazonaws.com'
 
-METHOD = 'POST'
 PATH = '/2015-04-17/distribution/%s/invalidation/' % AWS_SERVICE_ID
 CONTENT_TYPE = 'text/xml'
 CHARSET = 'utf-8'
@@ -89,19 +88,21 @@ def invalidate_cache(items):
 
     request_body = prepare_request_body(items)
 
-    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, METHOD,
+    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, 'POST',
                                                          PATH,
                                                          CONTENT_TYPE, CHARSET, AWS_HOST, '')
 
     headers = generate_request_headers(auth_header_value)
-    endpoint = 'http://' + AWS_HOST + PATH
+    endpoint = 'https://' + AWS_HOST + PATH
 
     print endpoint
     log_headers(headers)
 
     try:
         response = requests.post(url=endpoint, data=request_body, headers=headers)
-        return response.text
+        print response
+        print response.text
+        return response
     except Exception as e:
         print e.message
         return None
@@ -113,18 +114,20 @@ def get_invalidation_list():
     request_body = ''
     query_string = ''  # ?Marker=value&MaxItems=value see http://docs.aws.amazon.com/AmazonCloudFront/latest/APIReference/ListInvalidation.html
 
-    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, METHOD,
+    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, 'GET',
                                                          PATH,
                                                          CONTENT_TYPE, CHARSET, AWS_HOST, query_string)
     headers = generate_request_headers(auth_header_value)
-    endpoint = 'http://' + AWS_HOST + PATH
+    endpoint = 'https://' + AWS_HOST + PATH
 
     print endpoint
     log_headers(headers)
 
     try:
         response = requests.get(url=endpoint, headers=headers)
-        return response.text
+        print response
+        print response.text
+        return response
     except Exception as e:
         print e.message
         return None
@@ -136,18 +139,20 @@ def get_invalidation(invalidation_id):
     request_body = ''
     query_string = ''
 
-    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, METHOD,
-                                                         PATH,
+    auth_header_value = auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body, 'GET',
+                                                         PATH + invalidation_id,
                                                          CONTENT_TYPE, CHARSET, AWS_HOST, query_string)
     headers = generate_request_headers(auth_header_value)
-    endpoint = 'http://' + AWS_HOST + PATH + '/' + invalidation_id
+    endpoint = 'https://' + AWS_HOST + PATH + '/' + invalidation_id
 
     print endpoint
     log_headers(headers)
 
     try:
         response = requests.get(url=endpoint, headers=headers)
-        return response.text
+        print response
+        print response.text
+        return response
     except Exception as e:
         print e.message
         return None
@@ -164,12 +169,12 @@ def main():
     check_aws_keys()
     if options.action == 'invalidation_info':
         if len(arguments) == 1:
-            return get_invalidation(arguments[0])
+            print get_invalidation(arguments[0])
         else:
             print 'Action requires invalidation_id as argument'
 
     elif options.action == 'invalidation_info_list':
-        return get_invalidation_list()
+        print get_invalidation_list()
 
     elif options.action == 'invalidate':
         if len(arguments) == 1:
@@ -182,7 +187,7 @@ def main():
                         continue
                     input_files.append(line.strip())
 
-            return invalidate_cache(input_files)
+            print invalidate_cache(input_files)
         else:
             print 'Action requires changed file path as argument'
     else:
