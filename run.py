@@ -10,8 +10,8 @@ import requests
 
 from auth.authorization import Authorization
 
-AWS_ACCESS_KEY = 'AKIAICDQQHI5LLJT4L4A'
-AWS_SECRET_ACCESS_KEY = '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'
+AWS_ACCESS_KEY = 'AKIAICDQQHI5LLJT4L4A'  # os.environ.get('AWS_ACCESS_KEY')
+AWS_SECRET_ACCESS_KEY = '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'  # os.environ.get('AWS_SECRET_ACCESS_KEY')
 AWS_SERVICE_ID = 'E28W3Y5IKJSYFV'
 AWS_REGION = 'us-east-1'
 AWS_SERVICE = 'cloudfront'
