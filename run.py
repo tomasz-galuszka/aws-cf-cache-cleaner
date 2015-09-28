@@ -218,7 +218,8 @@ def main():
             print 'Action requires changed file path as argument'
     else:
         p.print_help()
-        print '\n -a [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n'
+        print '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n' \
+              '\n   **Example: python run.py -a invalidation_info_list **\n'
 
 
 if __name__ == '__main__':
