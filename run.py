@@ -189,7 +189,7 @@ def main():
     -a [invalidation_info<invalidation_id> | invalidation_info_list | invalidate<items_file_path> ]
     """
     p = optparse.OptionParser()
-    p.add_option('--action', '-a', default="invalidation_info_list")
+    p.add_option('--action', '-a')
     options, arguments = p.parse_args()
 
     check_aws_keys()
@@ -217,9 +217,8 @@ def main():
         else:
             print 'Action requires changed file path as argument'
     else:
-        print '\nInvalid arguments: \n\n' + \
-              os.path.basename(
-                  __file__) + ' -a [invalidation_info <invalidation_id>|invalidation_info_list|invalidate]\n'
+        p.print_help()
+        print '\n -a [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n'
 
 
 if __name__ == '__main__':
