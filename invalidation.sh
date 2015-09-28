@@ -1,3 +1,1 @@
-#!/bin/bash
-
-python run.py invalidation_info $1
+python run.py -a invalidation_info $1

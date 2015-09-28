@@ -1,3 +1,1 @@
-#!/bin/bash
-
-python run.py invalidate $1
+python run.py -a invalidate $1
