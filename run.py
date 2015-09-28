@@ -24,7 +24,6 @@ def main():
 
     elif options.action == 'invalidate':
         if len(arguments) == 1:
-
             changed_files_path = arguments[0]
             input_files = []
             with open(changed_files_path, 'r') as f:
@@ -35,7 +34,7 @@ def main():
 
             invalidator.invalidate_cache(input_files)
         else:
-            print 'Action requires changed file path as argument'
+            print 'Action requires changed file path as argument.'
     else:
         p.print_help()
         print '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n' \
