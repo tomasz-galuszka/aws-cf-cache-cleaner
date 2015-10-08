@@ -5,6 +5,17 @@ import time
 from invalidator.invalidator import Invalidator
 
 
+def read_input_files(input_file_str, mime_type):
+    if input_file_str is None or len(input_file_str) == 0:
+        return []
+    result = []
+    for item in input_file_str.splitlines():
+        if len(item) == 0:
+            continue
+        result.append("/" + mime_type + "/" + item)
+    return result
+
+
 def wait(seconds):
     sys.stdout.write('Waiting ' + seconds + ' seconds')
     sys.stdout.flush()
@@ -31,41 +42,39 @@ def main():
         if len(arguments) == 1:
             invalidator.get_invalidation(arguments[0])
         else:
-            print 'Action requires invalidation_id as argument'
+            raise Exception('Action requires invalidation_id as argument')
 
     elif options.action == 'invalidation_info_list':
         invalidator.get_invalidation_list()
 
     elif options.action == 'invalidate':
-        if len(arguments) == 1:
-            changed_files_path = arguments[0]
-            input_files = []
-            with open(changed_files_path, 'r') as f:
-                for line in f:
-                    if len(line.strip()) == 0:
-                        continue
-                    input_files.append(line.strip())
+        if len(arguments) != 2:
+            raise Exception('Action requires file as first argument and mime type as second argument.')
 
-            invalidation_id = invalidator.invalidate_cache(input_files)
-            if invalidation_id is not None:
-                print 'Checking for invalidation status'
-                while True:
-                    print 'Sending status request for invalidation: ' + str(invalidation_id)
-                    invalidation_status = invalidator.get_invalidation(invalidation_id)
-                    if invalidation_status == 'Completed':
-                        break
-                    if invalidation_status is None:
-                        print 'Invalid invalidation status '
-                        break
-                    wait(60)
-            else:
-                print 'Invalid invalidation_id'
-        else:
-            print 'Action requires file as first argument.'
+        input_files = read_input_files(arguments[0], arguments[1])
+        if len(input_files) == 0:
+            raise Exception('Empty file list')
+
+        invalidation_id = invalidator.invalidate_cache(input_files)
+
+        if invalidation_id is None:
+            raise Exception('Invalid invalidation_id')
+
+        while True:
+            invalidation_status = invalidator.get_invalidation(invalidation_id)
+
+            if invalidation_status is None:
+                raise Exception('Invalid invalidation status')
+            if invalidation_status == 'Completed':
+                print 'OK'
+                break
+            wait(60)
+
     else:
         p.print_help()
-        print '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n' \
-              '\n   **Example: python run.py -a invalidation_info_list **\n'
+        raise Exception(
+            '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path> <mime_type>]\n' \
+            '\n   **Example: python run.py -a invalidation_info_list **\n')
 
 
 if __name__ == '__main__':

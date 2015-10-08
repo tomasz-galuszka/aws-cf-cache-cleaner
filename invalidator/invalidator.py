@@ -9,7 +9,7 @@ import requests
 
 from auth.authorization import Authorization
 from config.config import ALGORITHM, AWS_SERVICE, REQUEST_BODY, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY, AWS_HOST, \
-    CONTENT_TYPE, CHARSET, PATH, AWS_REGION
+    CONTENT_TYPE, CHARSET, PATH, AWS_REGION, proxies
 
 
 class Invalidator(object):
@@ -85,7 +85,7 @@ class Invalidator(object):
         self.log_headers(headers)
 
         try:
-            response = requests.post(url=endpoint, data=request_body, headers=headers)
+            response = requests.post(url=endpoint, data=request_body, headers=headers, proxies=proxies)
             if response.status_code == requests.codes.ok:
                 xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
@@ -122,7 +122,7 @@ class Invalidator(object):
         self.log_headers(headers)
 
         try:
-            response = requests.get(url=endpoint, headers=headers)
+            response = requests.get(url=endpoint, headers=headers, proxies=proxies)
             if response.status_code == requests.codes.ok:
                 xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
@@ -159,7 +159,7 @@ class Invalidator(object):
         self.log_headers(headers)
 
         try:
-            response = requests.get(url=endpoint, headers=headers)
+            response = requests.get(url=endpoint, headers=headers , proxies=proxies)
             if response.status_code == requests.codes.ok:
                 xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
