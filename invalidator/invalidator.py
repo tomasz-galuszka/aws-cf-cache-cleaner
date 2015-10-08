@@ -153,7 +153,7 @@ class Invalidator(object):
                                                                   PATH + invalidation_id,
                                                                   CONTENT_TYPE, CHARSET, AWS_HOST, query_string)
         headers = self.generate_request_headers(auth_header_value)
-        endpoint = 'https://' + AWS_HOST + PATH + '/' + invalidation_id
+        endpoint = 'https://' + AWS_HOST + PATH + invalidation_id
 
         print endpoint
         self.log_headers(headers)
