@@ -81,9 +81,6 @@ class Invalidator(object):
         headers = self.generate_request_headers(auth_header_value)
         endpoint = 'https://' + AWS_HOST + PATH
 
-        print endpoint
-        self.log_headers(headers)
-
         try:
             response = requests.post(url=endpoint, data=request_body, headers=headers, proxies=proxies)
             if response.status_code == 201:
@@ -92,10 +89,6 @@ class Invalidator(object):
                 invalidaiton_id = root_element[0].text
                 invalidaiton_status = root_element[1].text
                 invalidaiton_created_time = root_element[3].text
-
-                print invalidaiton_id
-                print invalidaiton_status
-                print invalidaiton_created_time
 
                 return invalidaiton_id
             else:
@@ -106,7 +99,7 @@ class Invalidator(object):
             return None
 
     def get_invalidation_list(self):
-        print 'Trying to get invalidation list ...'
+        print '.'
 
         request_body = ''
         query_string = ''  # ?Marker=value&MaxItems=value see http://docs.aws.amazon.com/AmazonCloudFront/latest/APIReference/ListInvalidation.html
@@ -117,9 +110,6 @@ class Invalidator(object):
                                                                   CONTENT_TYPE, CHARSET, AWS_HOST, query_string)
         headers = self.generate_request_headers(auth_header_value)
         endpoint = 'https://' + AWS_HOST + PATH
-
-        print endpoint
-        self.log_headers(headers)
 
         try:
             response = requests.get(url=endpoint, headers=headers, proxies=proxies)
@@ -143,7 +133,7 @@ class Invalidator(object):
             return None
 
     def get_invalidation(self, invalidation_id):
-        print 'Trying to get invalidation %s ...' % str(invalidation_id)
+        print '.'
 
         request_body = ''
         query_string = ''
@@ -155,18 +145,15 @@ class Invalidator(object):
         headers = self.generate_request_headers(auth_header_value)
         endpoint = 'https://' + AWS_HOST + PATH + invalidation_id
 
-        print endpoint
-        self.log_headers(headers)
-
         try:
             response = requests.get(url=endpoint, headers=headers , proxies=proxies)
             if response.status_code == requests.codes.ok:
                 xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
 
-                print 'Id: ' + root_element[0].text
-                print 'Status: ' + root_element[1].text
-                print 'CreateTime: ' + root_element[2].text
+                # print 'Id: ' + root_element[0].text
+                # print 'Status: ' + root_element[1].text
+                # print 'CreateTime: ' + root_element[2].text
 
                 return root_element[1].text
             else:

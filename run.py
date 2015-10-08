@@ -5,14 +5,22 @@ import time
 from invalidator.invalidator import Invalidator
 
 
-def read_input_files(input_file_str, mime_type):
-    if input_file_str is None or len(input_file_str) == 0:
+def read_input_files(file_arguments):
+    if file_arguments is None or len(file_arguments) == 0:
         return []
     result = []
-    for item in input_file_str.splitlines():
+
+    mime_type = file_arguments[0]
+
+    i = 0
+    for item in file_arguments:
+        if i == 0:
+            i += 1
+            continue
         if len(item) == 0:
             continue
         result.append("/" + mime_type + "/" + item)
+        i += 1
     return result
 
 
@@ -50,10 +58,10 @@ def main():
         invalidator.get_invalidation_list()
 
     elif options.action == 'invalidate':
-        if len(arguments) != 2:
+        if len(arguments) < 2:
             raise Exception('Action requires file as first argument and mime type as second argument.')
 
-        input_files = read_input_files(arguments[0], arguments[1])
+        input_files = read_input_files(arguments)
         if len(input_files) == 0:
             raise Exception('Empty file list')
 
@@ -81,7 +89,7 @@ def main():
     else:
         p.print_help()
         raise Exception(
-            '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path> <mime_type>]\n' \
+            '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <content_type><files>]\n' \
             '\n   **Example: python run.py -a invalidation_info_list **\n')
 
 
