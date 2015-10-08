@@ -1,6 +1,20 @@
 import optparse
+import sys
+import time
 
 from invalidator.invalidator import Invalidator
+
+
+def wait(seconds):
+    sys.stdout.write('Waiting ' + seconds + ' seconds')
+    sys.stdout.flush()
+    j = 0
+    while j < seconds:
+        sys.stdout.write('.')
+        sys.stdout.flush()
+        time.sleep(1)
+        j += 1
+    print ""
 
 
 def main():
@@ -32,9 +46,22 @@ def main():
                         continue
                     input_files.append(line.strip())
 
-            invalidator.invalidate_cache(input_files)
+            invalidation_id = invalidator.invalidate_cache(input_files)
+            if invalidation_id is not None:
+                print 'Checking for invalidation status'
+                while True:
+                    print 'Sending status request for invalidation: ' + str(invalidation_id)
+                    invalidation_status = invalidator.get_invalidation(invalidation_id)
+                    if invalidation_status == 'Completed':
+                        break
+                    if invalidation_status is None:
+                        print 'Invalid invalidation status '
+                        break
+                    wait(60)
+            else:
+                print 'Invalid invalidation_id'
         else:
-            print 'Action requires changed file path as argument.'
+            print 'Action requires file as first argument.'
     else:
         p.print_help()
         print '    [invalidation_info <invalidation_id>|invalidation_info_list|invalidate <file_list_path>]\n' \

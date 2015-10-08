@@ -71,11 +71,6 @@ class Invalidator(object):
         }
 
     def invalidate_cache(self, items):
-        print 'Trying to invalidate files:\n'
-        for item in items:
-            print item
-        print '\n'
-
         request_body = self.prepare_request_body(items)
 
         auth_header_value = self.auth.create_authorization_header(AWS_ACCESS_KEY, AWS_SECRET_ACCESS_KEY, request_body,
@@ -92,14 +87,20 @@ class Invalidator(object):
         try:
             response = requests.post(url=endpoint, data=request_body, headers=headers)
             if response.status_code == requests.codes.ok:
-                xml_doc = ElementTree.parse(response.text)
+                xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
+                invalidaiton_id = root_element[0].text
+                invalidaiton_status = root_element[1].text
+                invalidaiton_created_time = root_element[3].text
 
-                print response.text
+                print invalidaiton_id
+                print invalidaiton_status
+                print invalidaiton_created_time
+
+                return invalidaiton_id
             else:
                 print response.text
-
-            return response
+                return None
         except Exception as e:
             print e.message
             return None
@@ -167,9 +168,10 @@ class Invalidator(object):
                 print 'Status: ' + root_element[1].text
                 print 'CreateTime: ' + root_element[2].text
 
+                return root_element[1].text
             else:
                 print response.text
-            return response
+                return None
         except Exception as e:
             print e.message
             return None
