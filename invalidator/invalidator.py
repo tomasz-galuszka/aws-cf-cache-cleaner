@@ -86,7 +86,7 @@ class Invalidator(object):
 
         try:
             response = requests.post(url=endpoint, data=request_body, headers=headers, proxies=proxies)
-            if response.status_code == requests.codes.ok:
+            if response.status_code == 201:
                 xml_doc = ElementTree.ElementTree(ElementTree.fromstring(response.text))
                 root_element = xml_doc.getroot()
                 invalidaiton_id = root_element[0].text

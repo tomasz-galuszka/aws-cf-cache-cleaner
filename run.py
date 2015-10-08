@@ -17,7 +17,7 @@ def read_input_files(input_file_str, mime_type):
 
 
 def wait(seconds):
-    sys.stdout.write('Waiting ' + seconds + ' seconds')
+    sys.stdout.write('Waiting ' + str(seconds) + ' seconds')
     sys.stdout.flush()
     j = 0
     while j < seconds:
@@ -36,15 +36,17 @@ def main():
     p.add_option('--action', '-a')
     options, arguments = p.parse_args()
 
-    invalidator = Invalidator()
-    invalidator.check_aws_keys()
     if options.action == 'invalidation_info':
         if len(arguments) == 1:
+            invalidator = Invalidator()
+            invalidator.check_aws_keys()
             invalidator.get_invalidation(arguments[0])
         else:
             raise Exception('Action requires invalidation_id as argument')
 
     elif options.action == 'invalidation_info_list':
+        invalidator = Invalidator()
+        invalidator.check_aws_keys()
         invalidator.get_invalidation_list()
 
     elif options.action == 'invalidate':
@@ -55,12 +57,18 @@ def main():
         if len(input_files) == 0:
             raise Exception('Empty file list')
 
+        invalidator = Invalidator()
+        invalidator.check_aws_keys()
+
         invalidation_id = invalidator.invalidate_cache(input_files)
 
         if invalidation_id is None:
             raise Exception('Invalid invalidation_id')
 
         while True:
+            invalidator = Invalidator()
+            invalidator.check_aws_keys()
+
             invalidation_status = invalidator.get_invalidation(invalidation_id)
 
             if invalidation_status is None:
