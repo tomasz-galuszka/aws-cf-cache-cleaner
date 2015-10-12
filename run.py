@@ -1,5 +1,4 @@
 import optparse
-import sys
 import time
 
 from invalidator.invalidator import Invalidator
@@ -19,21 +18,17 @@ def read_input_files(file_arguments):
             continue
         if len(item) == 0:
             continue
+        if item == 'version.txt':
+            continue
+
         result.append("/" + mime_type + "/" + item)
         i += 1
+
     return result
 
 
 def wait(seconds):
-    sys.stdout.write('Waiting ' + str(seconds) + ' seconds')
-    sys.stdout.flush()
-    j = 0
-    while j < seconds:
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        time.sleep(1)
-        j += 1
-    print ""
+    time.sleep(seconds)
 
 
 def main():
